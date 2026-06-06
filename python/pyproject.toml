@@ -1,0 +1,75 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "trading-strategies"
+version = "0.1.0"
+description = "Research repo for crypto and equities trading strategies."
+requires-python = ">=3.10"
+readme = "../README.md"
+
+dependencies = [
+  # Core data / numerics
+  "pandas>=2.1",
+  "numpy>=1.26",
+  "pyarrow>=14",            # parquet support for the OHLCV cache
+  "scipy>=1.11",
+  "statsmodels>=0.14",
+
+  # Market data sources
+  "ccxt>=4.2",              # crypto exchanges
+  "yfinance>=0.2.40",       # equities
+
+  # Indicators
+  "pandas-ta>=0.3.14b",     # pure-Python indicator library
+
+  # Backtesting
+  "vectorbt>=0.26",         # vectorized backtests, parameter sweeps
+  "backtrader>=1.9.78",     # event-driven backtests with realistic stops
+
+  # Plotting
+  "matplotlib>=3.8",
+  "plotly>=5.18",
+
+  # Notebooks
+  "jupyter>=1.0",
+  "ipykernel>=6.27",
+
+  # Utilities
+  "tqdm>=4.66",             # progress bars for data fetching
+  "python-dotenv>=1.0",     # for any local .env config (API keys, etc.)
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=7.4",
+  "pylint>=3.0",
+  "black>=24.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["src*"]
+
+# --- Tool configuration ---
+
+[tool.black]
+line-length = 100
+target-version = ["py310"]
+
+[tool.pylint."MESSAGES CONTROL"]
+# Suppress checks that aren't useful for research code
+disable = [
+  "missing-module-docstring",
+  "too-few-public-methods",
+  "too-many-arguments",
+  "too-many-locals",
+  "invalid-name",           # we use short names like df, ax, x — fine in research code
+]
+
+[tool.pylint."FORMAT"]
+max-line-length = 100
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]

@@ -1,0 +1,35 @@
+# Core runtime dependencies for trading-strategies.
+# Install with:  pip install -r requirements.txt
+#
+# Equivalent to the `dependencies` list in pyproject.toml.
+# For dev tools (pytest, pylint, black), use:  pip install -e .[dev]
+
+# Core data / numerics
+pandas>=2.1
+numpy>=1.26
+pyarrow>=14
+scipy>=1.11
+statsmodels>=0.14
+
+# Market data sources
+ccxt>=4.2
+yfinance>=0.2.40
+
+# Indicators
+pandas-ta>=0.3.14b
+
+# Backtesting
+vectorbt>=0.26
+backtrader>=1.9.78
+
+# Plotting
+matplotlib>=3.8
+plotly>=5.18
+
+# Notebooks
+jupyter>=1.0
+ipykernel>=6.27
+
+# Utilities
+tqdm>=4.66
+python-dotenv>=1.0
