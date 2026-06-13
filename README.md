@@ -9,14 +9,23 @@ This is a personal research repo. Strategies are hypotheses to be tested, not ad
 ## Layout
 
 ```
-pinescript/         TradingView indicators and strategies
-python/             Local backtest and research
-  src/              Reusable code (data, indicators, backtest, strategies)
-  notebooks/        Dated exploration notebooks
-  tests/            Unit tests for indicator math and metrics
-data/               Local OHLCV cache (gitignored)
-results/            Backtest outputs
+pinescript/                   TradingView indicators and strategies (Pine Script v6)
+  _template.pine              Skeleton — copy this when starting a new strategy
+
+python/                       Local research and backtesting
+  src/
+    data.py                   OHLCV fetcher and parquet cache (crypto + equities)
+    indicators.py             Custom indicator math not covered by pandas-ta
+    backtest.py               Metrics, walk-forward runner, parameter sweeps
+    strategies/               One .py per strategy
+  notebooks/                  Dated research notebooks (YYYY-MM-DD-topic.ipynb)
+  tests/                      Unit tests for indicator math and metric correctness
+
+data/                         Local OHLCV cache — gitignored, regenerate as needed
+results/                      Backtest outputs, organized per strategy
 ```
+
+See [python/README.md](python/README.md) for the Python tooling guide and [data/README.md](data/README.md) for the cache layout.
 
 ## Setup
 
@@ -28,16 +37,17 @@ source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -e .
 ```
 
-## Common commands
+## How to start
+
+Before running any strategy or backtest, you need local candlestick data. All strategies read from the parquet cache under `data/` — nothing works without it. Fetch a symbol with:
 
 ```bash
 cd python
-pytest                                              # run tests
-black src/ tests/                                   # format
-pylint src/ tests/                                  # lint
-python3 -m src.data --refresh-all                   # refresh OHLCV cache
-jupyter lab                                         # research notebooks
+source .venv/bin/activate
+python -m src.data --crypto BTC/USDT --timeframe 1d --since 2020-01-01
 ```
+
+See [data/README.md](data/README.md) for the full cache layout, CLI reference, and how incremental updates and backfills work.
 
 ## Conventions
 
