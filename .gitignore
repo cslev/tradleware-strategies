@@ -24,10 +24,10 @@ build/
 dist/
 
 # Data caches — regenerable, often large
-data/*.csv
-data/*.parquet
-data/*.db
-data/*.feather
+data/**/*.csv
+data/**/*.parquet
+data/**/*.db
+data/**/*.feather
 # Keep documentation about how to regenerate the data
 !data/README.md
 
