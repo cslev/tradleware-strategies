@@ -7,7 +7,6 @@ name = "trading-strategies"
 version = "0.1.0"
 description = "Research repo for crypto and equities trading strategies."
 requires-python = ">=3.10"
-readme = "../README.md"
 
 dependencies = [
   # Core data / numerics
