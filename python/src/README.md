@@ -134,9 +134,9 @@ quick succession.
 | `--timeframe TF` | `1d` | Candle interval. Crypto: `1m 5m 15m 1h 4h 1d 1w`. Equities: `1m 5m 15m 1h 1d 1wk 1mo` |
 | `--since YYYY-MM-DD` | `2020-01-01` | History start date |
 | `--until YYYY-MM-DD` | today | Stop fetching at this date |
-| `--exchange ID` | `okx` | ccxt exchange id for crypto |
+| `--exchange ID` | `binance` | ccxt exchange id for crypto |
 | `--refresh` | off | Discard cache, re-fetch from scratch |
-| `--csv` | off | Also write a CSV alongside the parquet |
+| `--no-csv` | off | Skip writing the CSV alongside the parquet |
 | `--verbose` / `-v` | off | Show live progress bar |
 | `--update` | off | Refresh all default symbols defined in the script |
 

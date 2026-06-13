@@ -102,7 +102,7 @@ def _check_exchange_capabilities(exchange: ccxt.Exchange, timeframe: str) -> Non
 # Crypto — ccxt
 # ---------------------------------------------------------------------------
 
-_DEFAULT_EXCHANGE = os.getenv("EXCHANGE", "okx")
+_DEFAULT_EXCHANGE = os.getenv("EXCHANGE", "binance")
 
 # How many candles ccxt returns per request varies by exchange.
 # OKX allows up to 300; use a conservative default that works broadly.
@@ -611,10 +611,10 @@ examples:
         help="Discard the cache and re-fetch everything from --since.",
     )
     parser.add_argument(
-        "--csv", action="store_true",
-        help="Also write a CSV file alongside the parquet (same path, .csv extension). "
-             "Useful for inspecting data in a text editor or spreadsheet.",
+        "--no-csv", dest="csv", action="store_false",
+        help="Skip writing a CSV file alongside the parquet.",
     )
+    parser.set_defaults(csv=True)
     parser.add_argument(
         "-v", "--verbose", action="store_true",
         help="Show a live progress bar while downloading candles.",
