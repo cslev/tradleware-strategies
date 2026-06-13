@@ -177,8 +177,9 @@ One `.py` file per strategy. Each file:
 - Runs a backtest and prints the full metric set.
 - Can be run directly: `python -m src.strategies.<name>`.
 
-Mirror filenames with Pine Script counterparts: `spy_daily_trend_follow.py` ↔
-`spy-daily-trend-follow.pine`.
+Mirror filenames with Pine Script counterparts:
+`python/src/strategies/spy_daily_trend_follow.py` ↔ `pinescript/strategies/spy-daily-trend-follow.pine`.
+Underscores for Python, hyphens for Pine.
 
 *(No strategies yet.)*
 

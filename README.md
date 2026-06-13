@@ -9,15 +9,15 @@ This is a personal research repo. Strategies are hypotheses to be tested, not ad
 ## Layout
 
 ```
-pinescript/                   TradingView indicators and strategies (Pine Script v6)
-  _template.pine              Skeleton — copy this when starting a new strategy
+pinescript/                   TradingView Pine Script v6
+  strategies/                 One .pine per strategy — mirrors python/src/strategies/
 
 python/                       Local research and backtesting
   src/
     data.py                   OHLCV fetcher and parquet cache (crypto + equities)
     indicators.py             Custom indicator math not covered by pandas-ta
     backtest.py               Metrics, walk-forward runner, parameter sweeps
-    strategies/               One .py per strategy
+    strategies/               One .py per strategy — mirrors pinescript/strategies/
   notebooks/                  Dated research notebooks (YYYY-MM-DD-topic.ipynb)
   tests/                      Unit tests for indicator math and metric correctness
 
