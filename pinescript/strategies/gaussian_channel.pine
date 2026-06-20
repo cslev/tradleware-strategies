@@ -1,5 +1,25 @@
 //@version=6
-strategy(title="TRADLEWARE-GC+RSI_v3", overlay=true, commission_type=strategy.commission.percent, commission_value=0.1, slippage=3, default_qty_type=strategy.percent_of_equity, default_qty_value=100)
+// Strategy: Gaussian Channel + Stochastic RSI
+// Hypothesis: Price breaking above the Gaussian upper band in an uptrending channel signals
+//             a momentum continuation; Stochastic RSI filters for entry timing (breakout
+//             strength or oversold dip within the trend). Exit when price drops back below
+//             the upper band or the channel reverses.
+// Assumed regime: trending (uptrend); underperforms in choppy/ranging markets
+// Timeframe: 1D (designed and tested on daily bars)
+// Assets: crypto spot (BTC, ETH); adaptable to equities
+// Known failure modes: whipsaws in sideways markets; upper-band breakouts that immediately
+//                      reverse; does not short, so bear markets bleed equity slowly
+
+strategy(title="TRADLEWARE-GC+RSI_v3.1", overlay=true,
+     initial_capital=10000,
+     default_qty_type=strategy.percent_of_equity,
+     default_qty_value=100,           // 100% of equity per trade (all-in, single position)
+     commission_type=strategy.commission.percent,
+     commission_value=0.1,
+     slippage=3,
+     pyramiding=0,
+     calc_on_every_tick=false,
+     process_orders_on_close=false)
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Gaussian Channel Indicator - courtesy of @DonovanWall
@@ -40,7 +60,7 @@ f_filt9x (_a, _s, _i) =>
 f_pole (_a, _s, _i) =>
     _f1 =            f_filt9x(_a, _s, 1),      _f2 = (_i >= 2 ? f_filt9x(_a, _s, 2) : 0), _f3 = (_i >= 3 ? f_filt9x(_a, _s, 3) : 0)
     _f4 = (_i >= 4 ? f_filt9x(_a, _s, 4) : 0), _f5 = (_i >= 5 ? f_filt9x(_a, _s, 5) : 0), _f6 = (_i >= 6 ? f_filt9x(_a, _s, 6) : 0)
-    _f7 = (_i >= 2 ? f_filt9x(_a, _s, 7) : 0), _f8 = (_i >= 8 ? f_filt9x(_a, _s, 8) : 0), _f9 = (_i == 9 ? f_filt9x(_a, _s, 9) : 0)
+    _f7 = (_i >= 7 ? f_filt9x(_a, _s, 7) : 0), _f8 = (_i >= 8 ? f_filt9x(_a, _s, 8) : 0), _f9 = (_i == 9 ? f_filt9x(_a, _s, 9) : 0)
     _fn = _i == 1 ? _f1 : _i == 2 ? _f2 : _i == 3 ? _f3 :
       _i == 4     ? _f4 : _i == 5 ? _f5 : _i == 6 ? _f6 :
       _i == 7     ? _f7 : _i == 8 ? _f8 : _i == 9 ? _f9 : na
@@ -145,7 +165,8 @@ barcolor(barcolor)
 // Check if gaussian channel is green (filt trending up)
 channelGreen = filt > filt[1]
 
-// Entry: Gaussian channel is green, close above high band, and Stochastic RSI is above 75 or below 25
+// Entry: Gaussian channel is green, close above high band, and Stochastic RSI %K is above
+//        rsiUpperThreshold (momentum/breakout) OR below rsiLowerThreshold (oversold dip in uptrend)
 longCondition = channelGreen and close > hband and (k > rsiUpperThreshold or k < rsiLowerThreshold) and timeCondition
 
 // Exit: Close is below high band OR channel reverses (whichever comes first)
