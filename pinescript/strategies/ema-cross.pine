@@ -1,0 +1,48 @@
+//@version=6
+// Strategy: Dual EMA Crossover
+// Hypothesis: fast EMA crossing above slow EMA signals a bullish trend shift;
+//             ride it until the cross reverses.
+// Assumed regime: trending. Whipsaws in sideways markets.
+// Timeframe: 1D
+// Assets: crypto spot / large-cap equities
+// Known failure modes: choppy markets, lagging entries and exits
+
+strategy("Tradleware-EMA Cross", overlay=true,
+     initial_capital=10000,
+     default_qty_type=strategy.percent_of_equity,
+     default_qty_value=100,           // 100% of equity per trade (all-in, single position)
+     commission_type=strategy.commission.percent,
+     commission_value=0.1,
+     slippage=3,
+     pyramiding=0,
+     process_orders_on_close=false)   // fill at NEXT bar's open — matches Python backtest
+
+// === Inputs ===
+fastLen = input.int(20,  "Fast EMA period", minval=1)
+slowLen = input.int(50,  "Slow EMA period", minval=1)
+
+// Start date — use integer fields (year / month / day) instead of input.time()
+// because input.time() does not reliably trigger a recalculation in TradingView.
+// Change these three values to match the --since date used in the Python backtest.
+startYear  = input.int(2021, "Start year",  minval=2000, maxval=2099)
+startMonth = input.int(1,    "Start month", minval=1,    maxval=12)
+startDay   = input.int(1,    "Start day",   minval=1,    maxval=31)
+timeOk     = time >= timestamp(startYear, startMonth, startDay, 0, 0)
+
+// === Signals ===
+fastEma = ta.ema(close, fastLen)
+slowEma = ta.ema(close, slowLen)
+
+longEntry = ta.crossover(fastEma, slowEma)   and timeOk
+longExit  = ta.crossunder(fastEma, slowEma)  and timeOk
+
+// === Orders ===
+if longEntry and strategy.position_size == 0
+    strategy.entry("Long", strategy.long)
+
+if longExit and strategy.position_size > 0
+    strategy.close("Long")
+
+// === Plots ===
+plot(fastEma, "Fast EMA", color=color.aqua,   linewidth=1)
+plot(slowEma, "Slow EMA", color=color.orange, linewidth=2)
