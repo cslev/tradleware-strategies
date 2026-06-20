@@ -137,7 +137,7 @@ def fetch_crypto(
     until: Optional[str] = None,
     exchange_id: Optional[str] = None,
     refresh: bool = False,
-    csv: bool = False,
+    csv: bool = True,
     verbose: bool = False,
 ) -> pd.DataFrame:
     """Fetch OHLCV data for a crypto pair, using the local parquet cache when possible.
@@ -397,7 +397,7 @@ def fetch_equity(
     start: Optional[str] = None,
     end: Optional[str] = None,
     refresh: bool = False,
-    csv: bool = False,
+    csv: bool = True,
 ) -> pd.DataFrame:
     """Fetch OHLCV data for a stock/ETF via yfinance, caching to parquet.
 

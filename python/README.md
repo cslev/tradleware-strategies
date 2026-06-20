@@ -153,19 +153,30 @@ Functions that aren't in [pandas-ta](https://github.com/twopirllc/pandas-ta) or 
 the pandas-ta version has a known issue. All functions take a `pd.DataFrame` or
 `pd.Series` and return the same shape.
 
-*(Not yet implemented — add functions here as needed.)*
+| Function | Returns | Description |
+|---|---|---|
+| `gaussian_channel(df, poles, period, mult, ...)` | `DataFrame[filt, hband, lband]` | Gaussian IIR filter with volatility bands (DonovanWall) |
+| `stoch_rsi(close, rsi_length, stoch_length, k_smooth, d_smooth)` | `(k, d)` Series | Stochastic RSI matching TradingView's implementation |
 
 ---
 
-## backtest.py — metrics and walk-forward runner
+## backtest.py — metrics and backtesting engine
 
-Wraps [vectorbt](https://vectorbt.pro/) (fast parameter sweeps) and
-[backtrader](https://www.backtrader.com/) (realistic event-driven simulation) with the
-standard metric set from `claude/knowledge/backtesting-playbook.md`:
-total return, CAGR, Sharpe, Sortino, max drawdown, Calmar, win rate, profit factor,
-avg win/loss, trade count, and exposure.
+A bar-by-bar backtesting engine that matches TradingView's strategy tester semantics
+(`process_orders_on_close=false`): entry/exit signals fill at the next bar's open;
+stop-losses check intrabar.
 
-*(Not yet implemented.)*
+Metrics reported: total return, CAGR, Sharpe, Sortino, max drawdown, Calmar, win rate,
+profit factor, avg win/loss (R-multiple), trade count, exposure.
+
+```python
+from src.backtest import run, compute_metrics, print_metrics, plot, buy_and_hold, dca
+
+result = run(df, entries, exits, stops, initial_capital=10_000, commission_pct=0.001)
+compute_metrics(result)
+print_metrics(result, title="My Strategy")
+plot(result, gc_df=None, compare=[buy_and_hold(df), dca(df)])
+```
 
 ---
 
@@ -173,15 +184,33 @@ avg win/loss, trade count, and exposure.
 
 One `.py` file per strategy. Each file:
 - States the hypothesis in the module docstring.
-- Imports OHLCV data via `fetch_crypto` / `fetch_equity`.
-- Runs a backtest and prints the full metric set.
+- Defines a `signals(df, **kwargs)` function returning `(entries, exits, stops)`.
+- Has a `__main__` block that fetches data, runs the backtest, prints metrics, and plots.
 - Can be run directly: `python -m src.strategies.<name>`.
 
 Mirror filenames with Pine Script counterparts:
 `python/src/strategies/spy_daily_trend_follow.py` ↔ `pinescript/strategies/spy-daily-trend-follow.pine`.
 Underscores for Python, hyphens for Pine.
 
-*(No strategies yet.)*
+| Strategy file | Pine Script mirror | Description |
+|---|---|---|
+| `gaussian_channel.py` | `gaussian_channel.pine` | Gaussian Channel + Stochastic RSI |
+
+### Running a strategy
+
+```bash
+cd python
+source .venv/bin/activate
+
+# Gaussian Channel on BTC/USDT daily from 2020
+python -m src.strategies.gaussian_channel --symbol BTC/USDT --since 2020-01-01
+
+# SPY equity
+python -m src.strategies.gaussian_channel --symbol SPY --equity --since 2015-01-01 --no-stop-loss
+
+# See all options
+python -m src.strategies.gaussian_channel --help
+```
 
 ---
 
